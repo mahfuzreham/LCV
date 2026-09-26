@@ -13,6 +13,7 @@ $roles = \LCV\Role::defaults();
         </div>
         <div class="lcv-actions">
             <a class="lcv-btn lcv-btn-primary" href="addonmodules.php?module=lcv&view=permissions">Manage permissions</a>
+            <?php if (!\LCV\Access::isSuperAdmin()): ?><a class="lcv-btn" href="addonmodules.php?module=lcv&view=verify">Verify Support PIN</a><?php endif; ?>
             <?php if (\LCV\Access::isSuperAdmin()): ?>
                 <a class="lcv-btn" href="addonmodules.php?module=lcv&view=staff">Staff assignments</a>
                 <a class="lcv-btn" href="addonmodules.php?module=lcv&view=security">Support PIN</a>
