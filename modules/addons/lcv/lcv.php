@@ -19,7 +19,7 @@ function lcv_config()
     return [
         'name' => 'Staff Permission & Support PIN',
         'description' => 'Granular WHMCS staff roles, page, action, field permissions and Support PIN verification.',
-        'version' => '0.5.4',
+        'version' => '0.5.5',
         'author' => 'Resellnom',
         'authorlink' => 'https://resellnom.com',
         'language' => 'english',
@@ -28,34 +28,7 @@ function lcv_config()
                 'FriendlyName' => 'WHMCS License Key',
                 'Type' => 'text',
                 'Size' => '40',
-                'Description' => 'Enter the license key issued by your WHMCS Software Licensing product. This value is stored in WHMCS addon configuration and is never included in the public source code.',
-            ],
-            'licensing_url' => [
-                'FriendlyName' => 'WHMCS Licensing URL',
-                'Type' => 'text',
-                'Size' => '50',
-                'Default' => 'https://my.resellnom.com/',
-                'Description' => 'Base URL of the WHMCS installation that runs the Software Licensing addon.',
-            ],
-            'licensing_secret_key' => [
-                'FriendlyName' => 'MD5 Hash Verification Secret',
-                'Type' => 'password',
-                'Size' => '40',
-                'Description' => 'Enter the secret configured for the WHMCS Software Licensing product. Never publish this value in GitHub.',
-            ],
-            'local_key_days' => [
-                'FriendlyName' => 'Local Key Days',
-                'Type' => 'text',
-                'Size' => '5',
-                'Default' => '30',
-                'Description' => 'Number of days between remote license checks. Default: 30 days.',
-            ],
-            'allow_check_fail_days' => [
-                'FriendlyName' => 'Remote Check Grace Days',
-                'Type' => 'text',
-                'Size' => '5',
-                'Default' => '5',
-                'Description' => 'Grace period when the licensing server cannot be reached.',
+                'Description' => 'Enter the license key issued for this installation.',
             ],
         ],
     ];
@@ -109,7 +82,7 @@ function lcv_output($vars)
     if (($license['status'] ?? '') !== \LCV\License::STATUS_ACTIVE) {
         echo '<div class="alert alert-danger"><strong>Staff Permission & Support PIN is locked.</strong><br>';
         echo htmlspecialchars($license['description'] ?? 'A valid WHMCS Software Licensing license is required.', ENT_QUOTES, 'UTF-8');
-        echo '<br><br>Configure the WHMCS License Key, Licensing URL and MD5 Hash Verification Secret under Addon Modules &gt; Configure.</div>';
+        echo '<br><br>Configure a valid WHMCS License Key under Addon Modules &gt; Configure.</div>';
         return;
     }
 
