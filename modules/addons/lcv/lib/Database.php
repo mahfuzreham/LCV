@@ -73,6 +73,15 @@ class Database
             });
         }
 
+        if (!$schema->hasTable('mod_lcv_role_departments')) {
+            $schema->create('mod_lcv_role_departments', function ($table) {
+                $table->increments('id');
+                $table->unsignedInteger('role_id');
+                $table->unsignedInteger('department_id');
+                $table->unique(['role_id', 'department_id']);
+            });
+        }
+
         if (!$schema->hasTable('mod_lcv_support_pins')) {
             $schema->create('mod_lcv_support_pins', function ($table) {
                 $table->increments('id');
