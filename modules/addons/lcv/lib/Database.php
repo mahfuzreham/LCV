@@ -11,6 +11,11 @@ class Database
         return Capsule::table('mod_lcv_' . $name);
     }
 
+    public static function coreTable($name)
+    {
+        return Capsule::table($name);
+    }
+
     public static function install()
     {
         $schema = Capsule::schema();
