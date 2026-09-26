@@ -149,6 +149,38 @@ class Database
             }
         }
 
+        $roleDefaults = [
+            'admin_manager' => ['clients.view','clients.summary.view','clients.profile.view','clients.contacts.view','services.view','services.create','services.modify','services.suspend','services.unsuspend','services.terminate','services.execute','tickets.view','tickets.reply','tickets.manage','billing.invoices.view','billing.transactions.view','billing.refund','servers.view','servers.manage','servers.execute'],
+            'support_manager' => ['clients.view','clients.summary.view','tickets.view','tickets.reply','tickets.manage'],
+            'support_staff' => ['clients.view','clients.summary.view','tickets.view','tickets.reply'],
+            'billing_staff' => ['clients.view','clients.summary.view','billing.invoices.view','billing.transactions.view'],
+            'technical_staff' => ['clients.view','clients.summary.view','services.view','services.modify','services.suspend','services.unsuspend','services.execute','servers.view','servers.execute'],
+            'sales_staff' => ['clients.view','clients.profile.view','clients.contacts.view','services.view'],
+            'read_only' => ['clients.view','services.view','tickets.view','billing.invoices.view','billing.transactions.view','servers.view'],
+        ];
+
+        foreach ($roleDefaults as $roleKey => $permissionKeys) {
+            $roleRow = self::table('roles')->where('role_key', $roleKey)->first();
+            if (!$roleRow) {
+                continue;
+            }
+
+            $hasPermissions = self::table('role_permissions')->where('role_id', $roleRow->id)->exists();
+            if ($hasPermissions) {
+                continue;
+            }
+
+            foreach ($permissionKeys as $permissionKey) {
+                $permissionId = self::table('permissions')->where('permission_key', $permissionKey)->value('id');
+                if ($permissionId) {
+                    self::table('role_permissions')->insert([
+                        'role_id' => $roleRow->id,
+                        'permission_id' => $permissionId,
+                    ]);
+                }
+            }
+        }
+
         $role = self::table('roles')->where('role_key', Role::SUPER_ADMIN)->first();
         if ($role) {
             foreach (self::table('permissions')->pluck('id') as $permissionId) {
