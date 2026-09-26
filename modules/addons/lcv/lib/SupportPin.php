@@ -40,7 +40,7 @@ class SupportPin
                 'verified_at'=>date('Y-m-d H:i:s'),
                 'updated_at'=>date('Y-m-d H:i:s'),
             ]);
-            $_SESSION[self::SESSION_KEY] = time() + 900;
+            $_SESSION[self::SESSION_KEY] = ['admin_id'=>(int)$adminId,'expires'=>time()+900];
             return true;
         }
 
@@ -54,9 +54,11 @@ class SupportPin
         return false;
     }
 
+    private static function adminId() { return (int) (function_exists('adminID') ? adminID() : ($_SESSION['adminid'] ?? 0)); }
+
     public static function verified()
     {
-        return !empty($_SESSION[self::SESSION_KEY]) && (int)$_SESSION[self::SESSION_KEY] > time();
+        $state=$_SESSION[self::SESSION_KEY] ?? null; if(!is_array($state)) return false; return (int)($state['admin_id'] ?? 0)===self::adminId() && (int)($state['expires'] ?? 0)>time();
     }
 
     public static function requireVerified()
