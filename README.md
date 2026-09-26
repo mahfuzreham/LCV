@@ -1,23 +1,57 @@
-# LCV — WHMCS Staff Access Control
+# Staff Permission & Support PIN
 
-LCV is a clean, native-feeling WHMCS administrator access-control addon focused on role, page, action, department and field-level permissions.
+**Developer:** MD Mahfuz Reham
 
-## Goals
-- Granular staff permissions without modifying WHMCS core files.
-- Page-level access such as `clientssummary.php`.
-- Action permissions such as view, create, modify, suspend, unsuspend and terminate.
-- Field-level view/edit control for client and service data.
-- Select All / Deselect All permission UX.
-- Audit logging for sensitive staff actions.
-- Conservative, natural WHMCS-style administration UI.
+A professional WHMCS administrator addon for granular staff access control, client/service permissions, field-level visibility, support department restrictions, and Support PIN verification.
 
-## Status
-Foundation scaffold — permission engine and UI are being implemented incrementally.
+## Features
+
+- Custom administrator roles
+- Granular page and action permissions
+- Client and Client Summary access control
+- Products & Services permissions
+- Field-level View / Edit permissions
+- Sensitive service data protection
+- Support department restrictions
+- Support PIN verification for protected staff actions
+- Select All / Deselect All controls
+- Staff activity and audit logs
+- Super Admin full-access mode
+- WHMCS core-file friendly architecture
+- Clean, professional WHMCS-style administration UI
+
+## Permission Examples
+
+- clients.view
+- clients.summary.view
+- clients.profile.view
+- services.view
+- services.create
+- services.modify
+- services.suspend
+- services.unsuspend
+- services.terminate
+- services.execute
+- tickets.view
+- tickets.reply
+- billing.invoices.view
+- billing.transactions.view
+- billing.refund
+
+## Field-Level Access
+
+Service fields can have independent View and Edit permissions, including Domain, Username, Password, Server, IP Address, Next Due Date, Recurring Amount, Payment Method, Status and Custom Fields.
 
 ## Compatibility
-Target: WHMCS 8.x/9.x. Exact compatibility will be verified against the deployed WHMCS version before production use.
+
+Target: WHMCS 8.x/9.x. Exact compatibility will be verified against the deployed WHMCS version before production release.
+
+## Status
+
+Foundation / active development.
 
 ## Installation
-Copy `modules/addons/lcv` into the WHMCS installation and activate LCV from Setup > System Settings > Addon Modules.
+
+Copy `modules/addons/lcv` into the WHMCS installation and activate the addon from the WHMCS admin area.
 
 Do not edit WHMCS core files.
