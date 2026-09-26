@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_pin'])) {
     }
 }
 
-$admins = \LCV\Database::table('admins')->where('disabled',0)->orderBy('username')->get();
+$admins = \LCV\Database::coreTable('tbladmins')->where('disabled',0)->orderBy('username')->get();
 ?>
 <div class="lcv-wrap">
     <div class="lcv-page-head">
