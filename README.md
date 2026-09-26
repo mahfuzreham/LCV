@@ -46,9 +46,19 @@ Service fields can have independent View and Edit permissions, including Domain,
 
 Target: WHMCS 8.x/9.x. Exact compatibility will be verified against the deployed WHMCS version before production release.
 
+## Licensing
+
+The addon uses the WHMCS Software Licensing verification endpoint configured in the addon settings. The license key and MD5 verification secret are stored in WHMCS addon configuration and are not included in this repository.
+
+- Local key validation avoids a remote request on every admin page load.
+- Default remote re-check interval: 30 days.
+- Domain, IP and installation-directory bindings are validated when the license is checked.
+- Unauthorized installation or inactive license status locks the addon UI and protected hooks.
+- Use the WHMCS License Manager to suspend, reissue or terminate a license when required.
+
 ## Status
 
-Foundation / active development.
+Production-readiness hardening / active development.
 
 ## Installation
 
