@@ -58,9 +58,25 @@ function lcv_output($vars)
 {
     $base = __DIR__;
 
-    if (isset($_GET['view']) && $_GET['view'] === 'permissions') {
-        LCV\\Access::requirePermission('clients.view');
+    $view = isset($_GET['view']) ? (string)$_GET['view'] : 'dashboard';
+
+    if ($view === 'permissions') {
         require $base . '/pages/permissions.php';
+        return;
+    }
+
+    if ($view === 'staff') {
+        require $base . '/pages/staff.php';
+        return;
+    }
+
+    if ($view === 'security') {
+        require $base . '/pages/security.php';
+        return;
+    }
+
+    if ($view === 'verify') {
+        require $base . '/pages/verify.php';
         return;
     }
 
