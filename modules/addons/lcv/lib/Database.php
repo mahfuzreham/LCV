@@ -2,7 +2,7 @@
 
 namespace LCV;
 
-use WHMCS\Database\\Capsule;
+use WHMCS\Database\Capsule;
 
 class Database
 {
