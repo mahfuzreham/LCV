@@ -20,7 +20,7 @@ use LCV\SupportPin;
 
 function lcv_guard_service_edit($vars)
 {
-    if (Access::isSuperAdmin()) {
+    if (!Access::adminId() || Access::isSuperAdmin()) {
         return;
     }
 
