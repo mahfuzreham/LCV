@@ -19,8 +19,9 @@ function lcv_config()
     return [
         'name' => 'Staff Permission & Support PIN',
         'description' => 'Granular WHMCS staff roles, page, action, field permissions and Support PIN verification.',
-        'version' => '0.5.3',
-        'author' => 'MD Mahfuz Reham',
+        'version' => '0.5.4',
+        'author' => 'Resellnom',
+        'authorlink' => 'https://resellnom.com',
         'language' => 'english',
         'fields' => [
             'license_key' => [
