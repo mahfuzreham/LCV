@@ -9,9 +9,11 @@ require_once __DIR__ . '/lib/Role.php';
 require_once __DIR__ . '/lib/Audit.php';
 require_once __DIR__ . '/lib/Database.php';
 require_once __DIR__ . '/lib/Access.php';
+require_once __DIR__ . '/lib/Audit.php';
 require_once __DIR__ . '/lib/SupportPin.php';
 
 use LCV\\Access;
+use LCV\\Audit;
 use LCV\\Audit;
 use LCV\\Database;
 use LCV\\SupportPin;
