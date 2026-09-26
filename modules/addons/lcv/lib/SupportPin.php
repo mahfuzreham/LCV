@@ -8,8 +8,8 @@ class SupportPin
 
     public static function setPin($adminId, $pin)
     {
-        if (!preg_match('/^\\d{4,8}$/', (string)$pin)) {
-            throw new \\InvalidArgumentException('Support PIN must contain 4-8 digits.');
+        if (!preg_match('/^\d{4,8}$/', (string)$pin)) {
+            throw new \InvalidArgumentException('Support PIN must contain 4-8 digits.');
         }
 
         Database::table('support_pins')->updateOrInsert(
@@ -54,11 +54,21 @@ class SupportPin
         return false;
     }
 
-    private static function adminId() { return (int) (function_exists('adminID') ? adminID() : ($_SESSION['adminid'] ?? 0)); }
+    private static function adminId()
+    {
+        return (int) (function_exists('adminID') ? adminID() : ($_SESSION['adminid'] ?? 0));
+    }
 
     public static function verified()
     {
-        $state=$_SESSION[self::SESSION_KEY] ?? null; if(!is_array($state)) return false; return (int)($state['admin_id'] ?? 0)===self::adminId() && (int)($state['expires'] ?? 0)>time();
+        $state = $_SESSION[self::SESSION_KEY] ?? null;
+
+        if (!is_array($state)) {
+            return false;
+        }
+
+        return (int)($state['admin_id'] ?? 0) === self::adminId()
+            && (int)($state['expires'] ?? 0) > time();
     }
 
     public static function requireVerified()
