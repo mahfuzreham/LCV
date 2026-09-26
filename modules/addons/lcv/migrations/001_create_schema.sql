@@ -48,6 +48,13 @@ CREATE TABLE mod_lcv_admin_roles (
     updated_at DATETIME NULL
 );
 
+CREATE TABLE mod_lcv_role_departments (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    role_id INT UNSIGNED NOT NULL,
+    department_id INT UNSIGNED NOT NULL,
+    UNIQUE KEY role_department (role_id, department_id)
+);
+
 CREATE TABLE mod_lcv_support_pins (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     admin_id INT UNSIGNED NOT NULL UNIQUE,
