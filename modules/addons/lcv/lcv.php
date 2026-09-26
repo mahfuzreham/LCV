@@ -19,7 +19,7 @@ function lcv_config()
     return [
         'name' => 'Staff Permission & Support PIN',
         'description' => 'Granular WHMCS staff roles, page, action, field permissions and Support PIN verification.',
-        'version' => '0.5.0',
+        'version' => '0.5.1',
         'author' => 'MD Mahfuz Reham',
         'language' => 'english',
         'fields' => [
@@ -27,20 +27,20 @@ function lcv_config()
                 'FriendlyName' => 'WHMCS License Key',
                 'Type' => 'text',
                 'Size' => '40',
-                'Description' => 'Enter the license key issued by your WHMCS Software Licensing product.',
+                'Description' => 'Enter the license key issued by your WHMCS Software Licensing product. This value is stored in WHMCS addon configuration and is never included in the public source code.',
             ],
             'licensing_url' => [
                 'FriendlyName' => 'WHMCS Licensing URL',
                 'Type' => 'text',
                 'Size' => '50',
-                'Default' => 'https://your-whmcs.example.com/',
+                'Default' => 'https://my.resellnom.com/',
                 'Description' => 'Base URL of the WHMCS installation that runs the Software Licensing addon.',
             ],
             'licensing_secret_key' => [
                 'FriendlyName' => 'MD5 Hash Verification Secret',
                 'Type' => 'password',
                 'Size' => '40',
-                'Description' => 'Must exactly match the MD5 Hash Verification value configured on the WHMCS licensing product.',
+                'Description' => 'Enter the secret configured for the WHMCS Software Licensing product. Never publish this value in GitHub.',
             ],
             'local_key_days' => [
                 'FriendlyName' => 'Local Key Days',
