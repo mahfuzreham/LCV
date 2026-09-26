@@ -80,6 +80,11 @@ function lcv_output($vars)
         return;
     }
 
+    if ($view === 'audit') {
+        require $base . '/pages/audit.php';
+        return;
+    }
+
     if ($view === 'verify') {
         require $base . '/pages/verify.php';
         return;
