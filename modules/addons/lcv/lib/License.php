@@ -49,7 +49,9 @@ class License
         $licenseKey = self::licenseKey();
         $whmcsUrl = rtrim(self::config('licensing_url'), '/') . '/';
         $secret = self::config('licensing_secret_key');
-        $localKeyDays = max(0, (int)self::config('local_key_days', 15));
+
+        // Default remote re-check: every 30 days.
+        $localKeyDays = max(1, (int)self::config('local_key_days', 30));
         $allowCheckFailDays = max(0, (int)self::config('allow_check_fail_days', 5));
 
         if ($licenseKey === '') {
@@ -105,12 +107,13 @@ class License
     {
         $checkToken = time() . md5(mt_rand(1000000000, 9999999999) . $licensekey);
         $checkdate = date('Ymd');
-        $domain = isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : '';
+        $domain = isset($_SERVER['SERVER_NAME']) ? strtolower(trim($_SERVER['SERVER_NAME'])) : '';
         $usersip = isset($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] : (isset($_SERVER['LOCAL_ADDR']) ? $_SERVER['LOCAL_ADDR'] : '');
         $dirpath = dirname(__DIR__);
         $verifyfilepath = 'modules/servers/licensing/verify.php';
 
         $localkeyvalid = false;
+        $installationMismatch = false;
         $results = [];
 
         if ($localkey) {
@@ -137,25 +140,27 @@ class License
                             );
 
                             if ($originalcheckdate > $localexpiry) {
-                                $localkeyvalid = true;
                                 $results = $localkeyresults;
+                                $installationMismatch = false;
 
-                                $validdomains = isset($results['validdomain']) ? explode(',', $results['validdomain']) : [];
+                                $validdomains = isset($results['validdomain']) ? array_filter(array_map('trim', explode(',', strtolower($results['validdomain'])))) : [];
                                 if ($validdomains && !in_array($domain, $validdomains, true)) {
-                                    $localkeyvalid = false;
+                                    $installationMismatch = true;
                                 }
 
-                                $validips = isset($results['validip']) ? explode(',', $results['validip']) : [];
+                                $validips = isset($results['validip']) ? array_filter(array_map('trim', explode(',', $results['validip']))) : [];
                                 if ($validips && !in_array($usersip, $validips, true)) {
-                                    $localkeyvalid = false;
+                                    $installationMismatch = true;
                                 }
 
-                                $validdirs = isset($results['validdirectory']) ? explode(',', $results['validdirectory']) : [];
+                                $validdirs = isset($results['validdirectory']) ? array_filter(array_map('trim', explode(',', $results['validdirectory']))) : [];
                                 if ($validdirs && !in_array($dirpath, $validdirs, true)) {
-                                    $localkeyvalid = false;
+                                    $installationMismatch = true;
                                 }
 
-                                if (!$localkeyvalid) {
+                                if (!$installationMismatch) {
+                                    $localkeyvalid = true;
+                                } else {
                                     $results = [];
                                 }
                             }
@@ -199,13 +204,14 @@ class License
                     mktime(0, 0, 0, date('m'), date('d') - ($localkeydays + $allowCheckFailDays), date('Y'))
                 );
 
-                if (!empty($localkey) && isset($originalcheckdate) && $originalcheckdate > $localexpiry && !empty($localkeyresults)) {
+                if (!empty($localkey) && isset($originalcheckdate) && $originalcheckdate > $localexpiry && !empty($localkeyresults) && !$installationMismatch) {
                     $results = $localkeyresults;
                     $results['remotecheck'] = false;
                 } else {
                     return [
                         'status' => 'Remote Check Failed',
                         'description' => $curlError ?: ('License server returned no response (HTTP ' . $httpCode . ').'),
+                        'installation_mismatch' => $installationMismatch,
                     ];
                 }
             } else {
@@ -218,11 +224,19 @@ class License
             }
 
             if (!is_array($results) || empty($results['status'])) {
-                return ['status' => 'Invalid', 'description' => 'Invalid license server response.'];
+                return [
+                    'status' => 'Invalid',
+                    'description' => 'Invalid license server response.',
+                    'installation_mismatch' => $installationMismatch,
+                ];
             }
 
             if (!empty($results['md5hash']) && !hash_equals($results['md5hash'], md5($secret . $checkToken))) {
-                return ['status' => 'Invalid', 'description' => 'MD5 checksum verification failed.'];
+                return [
+                    'status' => 'Invalid',
+                    'description' => 'MD5 checksum verification failed.',
+                    'installation_mismatch' => $installationMismatch,
+                ];
             }
 
             if ($results['status'] === self::STATUS_ACTIVE) {
@@ -236,6 +250,12 @@ class License
             }
 
             $results['remotecheck'] = true;
+        }
+
+        $results['installation_mismatch'] = $installationMismatch;
+
+        if (($results['status'] ?? '') !== self::STATUS_ACTIVE && $installationMismatch) {
+            $results['description'] = 'Unauthorized installation detected. The licensed domain, IP address, or installation directory does not match the license.';
         }
 
         return $results;
