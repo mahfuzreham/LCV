@@ -14,13 +14,9 @@ if (!Access::isSuperAdmin()) {
 
 $roles = Role::defaults();
 $selectedRole = isset($_GET['role']) ? (string)$_GET['role'] : Role::SUPER_ADMIN;
-if (!isset($roles[$selectedRole])) {
-    $selectedRole = Role::SUPER_ADMIN;
-}
+if (!isset($roles[$selectedRole])) $selectedRole = Role::SUPER_ADMIN;
 
-if (empty($_SESSION['lcv_csrf'])) {
-    $_SESSION['lcv_csrf'] = bin2hex(random_bytes(32));
-}
+if (empty($_SESSION['lcv_csrf'])) $_SESSION['lcv_csrf'] = bin2hex(random_bytes(32));
 $csrf = $_SESSION['lcv_csrf'];
 
 $groups = [
@@ -58,69 +54,40 @@ $groups = [
 ];
 
 $serviceFields = [
-    'service_id' => 'Service ID',
-    'client_name' => 'Client name',
-    'product' => 'Product / service',
-    'domain' => 'Domain',
-    'username' => 'Username',
-    'password' => 'Password',
-    'server' => 'Server',
-    'ip' => 'IP address',
-    'dedicated_ip' => 'Dedicated IP',
-    'registration_date' => 'Registration date',
-    'next_due_date' => 'Next due date',
-    'billing_cycle' => 'Billing cycle',
-    'first_payment_amount' => 'First payment amount',
-    'recurring_amount' => 'Recurring amount',
-    'payment_method' => 'Payment method',
-    'status' => 'Status',
-    'assigned_product' => 'Assigned product',
-    'custom_fields' => 'Custom fields',
-    'service_notes' => 'Service notes',
-    'credentials' => 'Credentials',
+    'service_id' => 'Service ID','client_name' => 'Client name','product' => 'Product / service','domain' => 'Domain',
+    'username' => 'Username','password' => 'Password','server' => 'Server','ip' => 'IP address','dedicated_ip' => 'Dedicated IP',
+    'registration_date' => 'Registration date','next_due_date' => 'Next due date','billing_cycle' => 'Billing cycle',
+    'first_payment_amount' => 'First payment amount','recurring_amount' => 'Recurring amount','payment_method' => 'Payment method',
+    'status' => 'Status','assigned_product' => 'Assigned product','custom_fields' => 'Custom fields',
+    'service_notes' => 'Service notes','credentials' => 'Credentials',
 ];
 
-$message = null;
-$error = null;
-
+$message = null; $error = null;
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_permissions'])) {
     if (!hash_equals($csrf, (string)($_POST['csrf'] ?? ''))) {
         $error = 'Invalid security token. Please reload the page.';
     } else {
         try {
             $role = Database::table('roles')->where('role_key', $selectedRole)->first();
-            if (!$role) {
-                throw new RuntimeException('Role not found.');
-            }
-
+            if (!$role) throw new RuntimeException('Role not found.');
             Database::table('role_permissions')->where('role_id', $role->id)->delete();
             $selected = isset($_POST['permissions']) && is_array($_POST['permissions']) ? $_POST['permissions'] : [];
             $validKeys = [];
-            foreach ($groups as $permissions) {
-                $validKeys = array_merge($validKeys, array_keys($permissions));
-            }
-
+            foreach ($groups as $permissions) $validKeys = array_merge($validKeys, array_keys($permissions));
             foreach (array_unique($selected) as $key) {
                 if (!in_array($key, $validKeys, true)) continue;
                 $permissionId = Database::table('permissions')->where('permission_key', $key)->value('id');
-                if ($permissionId) {
-                    Database::table('role_permissions')->insert(['role_id'=>$role->id,'permission_id'=>$permissionId]);
-                }
+                if ($permissionId) Database::table('role_permissions')->insert(['role_id'=>$role->id,'permission_id'=>$permissionId]);
             }
-
             Database::table('field_permissions')->where('role_id', $role->id)->delete();
             foreach ($serviceFields as $key => $label) {
                 Database::table('field_permissions')->insert([
-                    'role_id'=>$role->id,
-                    'resource'=>'services',
-                    'field_key'=>$key,
+                    'role_id'=>$role->id,'resource'=>'services','field_key'=>$key,
                     'can_view'=>isset($_POST['field_view'][$key]) ? 1 : 0,
                     'can_edit'=>isset($_POST['field_edit'][$key]) ? 1 : 0,
-                    'created_at'=>date('Y-m-d H:i:s'),
-                    'updated_at'=>date('Y-m-d H:i:s'),
+                    'created_at'=>date('Y-m-d H:i:s'),'updated_at'=>date('Y-m-d H:i:s'),
                 ]);
             }
-
             Audit::record('permissions.updated', 'role', $role->id, ['role_key'=>$selectedRole]);
             $message = 'Permissions saved successfully.';
         } catch (Throwable $e) {
@@ -130,49 +97,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_permissions'])) 
 }
 
 $roleRow = Database::table('roles')->where('role_key', $selectedRole)->first();
-$permissionKeys = [];
-$fieldRows = [];
+$permissionKeys = []; $fieldRows = [];
 if ($roleRow) {
     $permissionIds = Database::table('role_permissions')->where('role_id', $roleRow->id)->pluck('permission_id')->toArray();
-    if ($permissionIds) {
-        $permissionKeys = Database::table('permissions')->whereIn('id', $permissionIds)->pluck('permission_key')->toArray();
-    }
+    if ($permissionIds) $permissionKeys = Database::table('permissions')->whereIn('id', $permissionIds)->pluck('permission_key')->toArray();
     $fieldRows = Database::table('field_permissions')->where('role_id', $roleRow->id)->get()->keyBy('field_key');
 }
 $fullAccess = $selectedRole === Role::SUPER_ADMIN;
 ?>
 <div class="lcv-wrap">
     <div class="lcv-page-head">
-        <div>
-            <a class="lcv-back" href="addonmodules.php?module=lcv">‹ Staff Access</a>
-            <h1><?= htmlspecialchars($roles[$selectedRole], ENT_QUOTES, 'UTF-8') ?></h1>
-            <p>Choose exactly what this role can see and do.</p>
-        </div>
-        <div class="lcv-actions">
-            <button type="button" class="lcv-btn" data-lcv-clear>Clear all</button>
-            <button type="button" class="lcv-btn lcv-btn-primary" data-lcv-select>Allow all</button>
-        </div>
+        <div><a class="lcv-back" href="addonmodules.php?module=lcv">‹ Staff Access</a><h1>Permissions</h1><p>Define exactly what each staff role can view, edit and execute.</p></div>
+        <div class="lcv-actions"><button type="button" class="lcv-btn" data-lcv-clear>Clear all</button><button type="button" class="lcv-btn lcv-btn-primary" data-lcv-select>Allow all</button></div>
+    </div>
+    <nav class="lcv-nav">
+        <a href="addonmodules.php?module=lcv">Overview</a><a class="active" href="addonmodules.php?module=lcv&view=permissions">Permissions</a>
+        <a href="addonmodules.php?module=lcv&view=staff">Staff</a><a href="addonmodules.php?module=lcv&view=security">Support PIN</a>
+        <a href="addonmodules.php?module=lcv&view=departments">Departments</a><a href="addonmodules.php?module=lcv&view=audit">Audit Log</a>
+    </nav>
+
+    <?php if ($message): ?><div class="lcv-alert lcv-alert-success"><?= htmlspecialchars($message, ENT_QUOTES, 'UTF-8') ?></div><?php endif; ?>
+    <?php if ($error): ?><div class="lcv-alert lcv-alert-danger"><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></div><?php endif; ?>
+
+    <div class="lcv-role-switch">
+        <label for="lcv-role">Role</label>
+        <select id="lcv-role" class="lcv-select" onchange="window.location='addonmodules.php?module=lcv&view=permissions&role='+encodeURIComponent(this.value)">
+            <?php foreach ($roles as $key => $name): ?><option value="<?= htmlspecialchars($key, ENT_QUOTES, 'UTF-8') ?>" <?= $selectedRole === $key ? 'selected' : '' ?>><?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?></option><?php endforeach; ?>
+        </select>
+        <span class="lcv-muted">Changes apply to this role only.</span>
     </div>
 
-    <?php if ($message): ?><div class="alert alert-success"><?= htmlspecialchars($message, ENT_QUOTES, 'UTF-8') ?></div><?php endif; ?>
-    <?php if ($error): ?><div class="alert alert-danger"><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></div><?php endif; ?>
-
     <form method="post" action="">
-        <input type="hidden" name="csrf" value="<?= htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8') ?>">
-        <input type="hidden" name="save_permissions" value="1">
-
-        <div class="lcv-role-switch">
-            <label>Role</label>
-            <select onchange="window.location='addonmodules.php?module=lcv&view=permissions&role='+encodeURIComponent(this.value)">
-                <?php foreach ($roles as $key => $name): ?>
-                    <option value="<?= htmlspecialchars($key, ENT_QUOTES, 'UTF-8') ?>" <?= $selectedRole === $key ? 'selected' : '' ?>><?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?></option>
-                <?php endforeach; ?>
-            </select>
-        </div>
+        <input type="hidden" name="csrf" value="<?= htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8') ?>"><input type="hidden" name="save_permissions" value="1">
 
         <?php foreach ($groups as $group => $permissions): ?>
-            <section class="lcv-card lcv-permission-group">
-                <div class="lcv-card-head"><div><h2><?= htmlspecialchars($group, ENT_QUOTES, 'UTF-8') ?></h2><span><?= count($permissions) ?> permissions</span></div></div>
+            <section class="lcv-card lcv-permission-group" data-lcv-group="<?= htmlspecialchars($group, ENT_QUOTES, 'UTF-8') ?>">
+                <div class="lcv-card-head">
+                    <div><h2><?= htmlspecialchars($group, ENT_QUOTES, 'UTF-8') ?></h2><span><?= count($permissions) ?> permissions</span></div>
+                    <button type="button" class="lcv-btn" data-lcv-group-select="<?= htmlspecialchars($group, ENT_QUOTES, 'UTF-8') ?>">Select group</button>
+                </div>
                 <div class="lcv-permission-list">
                     <?php foreach ($permissions as $key => $label): ?>
                         <label class="lcv-permission-row">
@@ -185,7 +148,7 @@ $fullAccess = $selectedRole === Role::SUPER_ADMIN;
         <?php endforeach; ?>
 
         <section class="lcv-card">
-            <div class="lcv-card-head"><div><h2>Service fields</h2><span>View and Edit are independent controls.</span></div></div>
+            <div class="lcv-card-head"><div><h2>Service fields</h2><span>View and Edit are independent controls. Sensitive fields should remain restricted unless required.</span></div></div>
             <div class="lcv-table-wrap">
                 <table class="lcv-table lcv-field-table">
                     <thead><tr><th>Field</th><th>View</th><th>Edit</th></tr></thead>
