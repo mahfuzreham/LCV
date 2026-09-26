@@ -11,7 +11,7 @@ require_once __DIR__ . '/lib/Database.php';
 require_once __DIR__ . '/lib/Access.php';
 require_once __DIR__ . '/lib/SupportPin.php';
 
-use LCV\\Database;
+use LCV\Database;
 
 function lcv_config()
 {
@@ -33,7 +33,7 @@ function lcv_activate()
             'status' => 'success',
             'description' => 'Staff Permission & Support PIN activated and database tables initialized.',
         ];
-    } catch (\\Throwable $e) {
+    } catch (\Throwable $e) {
         return [
             'status' => 'error',
             'description' => 'Installation failed: ' . $e->getMessage(),
