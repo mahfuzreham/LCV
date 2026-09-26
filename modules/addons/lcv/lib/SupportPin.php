@@ -9,7 +9,7 @@ class SupportPin
     public static function setPin($adminId, $pin)
     {
         if (!preg_match('/^\\d{4,8}$/', (string)$pin)) {
-            throw new InvalidArgumentException('Support PIN must contain 4-8 digits.');
+            throw new \\InvalidArgumentException('Support PIN must contain 4-8 digits.');
         }
 
         Database::table('support_pins')->updateOrInsert(
