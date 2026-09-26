@@ -109,7 +109,7 @@ class License
         $checkdate = date('Ymd');
         $domain = isset($_SERVER['SERVER_NAME']) ? strtolower(trim($_SERVER['SERVER_NAME'])) : '';
         $usersip = isset($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] : (isset($_SERVER['LOCAL_ADDR']) ? $_SERVER['LOCAL_ADDR'] : '');
-        $dirpath = dirname(__DIR__);
+        $dirpath = defined('ROOTDIR') ? ROOTDIR : dirname(__DIR__, 3);
         $verifyfilepath = 'modules/servers/licensing/verify.php';
 
         $localkeyvalid = false;
