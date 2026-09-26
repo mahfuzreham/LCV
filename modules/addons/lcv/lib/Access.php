@@ -68,6 +68,22 @@ class Access
         return $action === 'edit' ? (bool)$row->can_edit : (bool)$row->can_view;
     }
 
+    public static function canDepartment($departmentId, $adminId = null)
+    {
+        if (self::isSuperAdmin($adminId)) return true;
+
+        $roleId = self::roleId($adminId);
+        if (!$roleId) return false;
+
+        $count = Database::table('role_departments')->where('role_id', $roleId)->count();
+        if ($count === 0) return true;
+
+        return Database::table('role_departments')
+            ->where('role_id', $roleId)
+            ->where('department_id', (int)$departmentId)
+            ->exists();
+    }
+
     public static function requirePermission($permission)
     {
         if (!self::can($permission)) {
