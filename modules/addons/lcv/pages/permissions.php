@@ -32,6 +32,7 @@ $groups = [
     ],
     'Products & Services' => [
         'services.view' => 'View services',
+        'services.native.view' => 'Open native WHMCS service page',
         'services.create' => 'Create services',
         'services.modify' => 'Modify services',
         'services.suspend' => 'Suspend services',
