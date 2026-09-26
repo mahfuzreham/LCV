@@ -85,6 +85,11 @@ function lcv_output($vars)
         return;
     }
 
+    if ($view === 'service') {
+        require $base . '/pages/service.php';
+        return;
+    }
+
     if ($view === 'verify') {
         require $base . '/pages/verify.php';
         return;
