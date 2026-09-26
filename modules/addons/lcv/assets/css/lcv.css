@@ -1,0 +1,40 @@
+/* LCV — restrained WHMCS-style admin UI */
+.lcv-wrap{max-width:1180px;margin:24px auto;padding:0 18px;color:#27313d;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+.lcv-page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:22px}
+.lcv-page-head h1{font-size:24px;line-height:1.2;margin:7px 0 6px;font-weight:600;color:#202a35}
+.lcv-page-head p{margin:0;color:#7a8591;font-size:14px}
+.lcv-back{color:#66717d;text-decoration:none;font-size:13px}
+.lcv-actions{display:flex;gap:8px;align-items:center}
+.lcv-btn{appearance:none;border:1px solid #d7dde3;background:#fff;border-radius:5px;padding:8px 13px;color:#394552;font-size:13px;cursor:pointer}
+.lcv-btn:hover{background:#f6f8fa}
+.lcv-btn-primary{background:#2f6fed;border-color:#2f6fed;color:#fff}
+.lcv-btn-primary:hover{background:#285fca}
+.lcv-card{background:#fff;border:1px solid #e1e5e9;border-radius:6px;margin-bottom:16px;box-shadow:0 1px 2px rgba(20,30,40,.03)}
+.lcv-card-head{padding:16px 18px;border-bottom:1px solid #e8ebee;display:flex;justify-content:space-between;align-items:center}
+.lcv-card-head h2{font-size:15px;margin:0 0 3px;font-weight:600;color:#27313d}
+.lcv-card-head span{font-size:12px;color:#87919c}
+.lcv-table-wrap{overflow:auto}
+.lcv-table{width:100%;border-collapse:collapse;font-size:13px}
+.lcv-table th{background:#fafbfc;color:#737e89;font-weight:600;text-align:left;font-size:12px;padding:10px 18px;border-bottom:1px solid #e8ebee;white-space:nowrap}
+.lcv-table td{padding:13px 18px;border-bottom:1px solid #eef0f2;vertical-align:middle}
+.lcv-table tr:last-child td{border-bottom:0}
+.lcv-table td strong,.lcv-table td small{display:block}
+.lcv-table td small,.lcv-permission-row small{font-size:11px;color:#9aa3ac;margin-top:3px}
+.lcv-right{text-align:right}
+.lcv-link{color:#2f6fed;text-decoration:none;font-size:13px}
+.lcv-link:hover{text-decoration:underline}
+.lcv-permission-list{padding:0}
+.lcv-permission-row{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:13px 18px;border-bottom:1px solid #eef0f2;cursor:pointer}
+.lcv-permission-row:last-child{border-bottom:0}
+.lcv-permission-row:hover{background:#fafcfe}
+.lcv-check{width:16px;height:16px;accent-color:#2f6fed;cursor:pointer}
+.lcv-field-table th:not(:first-child),.lcv-field-table td:not(:first-child){width:90px;text-align:center}
+.lcv-field-table td:first-child{min-width:280px}
+.lcv-permission-group{overflow:hidden}
+@media(max-width:700px){
+ .lcv-page-head{align-items:flex-start;flex-direction:column}
+ .lcv-actions{width:100%}
+ .lcv-btn{flex:1}
+ .lcv-wrap{padding:0 10px}
+ .lcv-table th,.lcv-table td{padding:10px 12px}
+}
