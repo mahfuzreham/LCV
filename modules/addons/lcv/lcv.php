@@ -11,10 +11,10 @@ require_once __DIR__ . '/lib/Audit.php';
 function lcv_config()
 {
     return [
-        'name' => 'LCV Staff Access Control',
-        'description' => 'Granular WHMCS staff roles, page, action and field permissions.',
+        'name' => 'Staff Permission & Support PIN',
+        'description' => 'Granular WHMCS staff roles, page, action, field permissions and Support PIN verification.',
         'version' => '0.1.0',
-        'author' => 'LCV',
+        'author' => 'MD Mahfuz Reham',
         'language' => 'english',
         'fields' => [],
     ];
@@ -24,7 +24,7 @@ function lcv_activate()
 {
     return [
         'status' => 'success',
-        'description' => 'LCV foundation activated. Database migrations will be added in the next implementation stage.',
+        'description' => 'Staff Permission & Support PIN foundation activated. Database migrations and enforcement are being implemented.',
     ];
 }
 
@@ -32,7 +32,7 @@ function lcv_deactivate()
 {
     return [
         'status' => 'success',
-        'description' => 'LCV deactivated. Existing permission data is preserved.',
+        'description' => 'Staff Permission & Support PIN deactivated. Existing permission data is preserved.',
     ];
 }
 
