@@ -17,6 +17,70 @@ use LCV\Database;
 use LCV\SupportPin;
 
 
+
+function lcv_guard_service_edit($vars)
+{
+    if (Access::isSuperAdmin()) {
+        return;
+    }
+
+    $serviceId = (int)($vars['serviceid'] ?? 0);
+    if (!$serviceId) {
+        return;
+    }
+
+    $map = [
+        'domain' => 'domain',
+        'username' => 'username',
+        'password' => 'password',
+        'server' => 'server',
+        'dedicatedip' => 'dedicated_ip',
+        'regdate' => 'registration_date',
+        'nextduedate' => 'next_due_date',
+        'billingcycle' => 'billing_cycle',
+        'firstpaymentamount' => 'first_payment_amount',
+        'amount' => 'recurring_amount',
+        'paymentmethod' => 'payment_method',
+        'domainstatus' => 'status',
+        'packageid' => 'assigned_product',
+        'notes' => 'service_notes',
+    ];
+
+    $submitted = [];
+    foreach ($map as $requestKey => $fieldKey) {
+        if (array_key_exists($requestKey, $_REQUEST)) {
+            $submitted[$fieldKey] = $_REQUEST[$requestKey];
+        }
+    }
+
+    if (!$submitted) {
+        return;
+    }
+
+    if (!Access::can('services.modify')) {
+        Audit::record('access.denied', 'service', $serviceId, ['reason' => 'services.modify']);
+        http_response_code(403);
+        exit('Staff Permission & Support PIN: Service modification denied.');
+    }
+
+    foreach ($submitted as $fieldKey => $value) {
+        if (!Access::field('services', $fieldKey, 'edit')) {
+            Audit::record('access.denied', 'service', $serviceId, ['reason' => 'field.edit', 'field' => $fieldKey]);
+            http_response_code(403);
+            exit('Staff Permission & Support PIN: Edit permission denied for ' . htmlspecialchars($fieldKey, ENT_QUOTES, 'UTF-8') . '.');
+        }
+    }
+
+    if (!SupportPin::verified()) {
+        Audit::record('support_pin.required', 'service', $serviceId, ['reason' => 'service.edit']);
+        http_response_code(403);
+        exit('Staff Permission & Support PIN: Verify your Support PIN before editing a service.');
+    }
+}
+
+add_hook('PreAdminServiceEdit', 1, 'lcv_guard_service_edit');
+add_hook('PreServiceEdit', 1, 'lcv_guard_service_edit');
+
 function lcv_guard_module_action($permission)
 {
     if (!Access::adminId() || Access::isSuperAdmin()) {
