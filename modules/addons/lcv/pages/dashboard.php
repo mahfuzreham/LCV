@@ -17,6 +17,7 @@ $roles = \LCV\Role::defaults();
                 <a class="lcv-btn" href="addonmodules.php?module=lcv&view=staff">Staff assignments</a>
                 <a class="lcv-btn" href="addonmodules.php?module=lcv&view=security">Support PIN</a>
                 <a class="lcv-btn" href="addonmodules.php?module=lcv&view=departments">Support departments</a>
+                <a class="lcv-btn" href="addonmodules.php?module=lcv&view=audit">Audit log</a>
             <?php endif; ?>
         </div>
     </div>
