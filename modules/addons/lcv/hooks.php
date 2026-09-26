@@ -162,6 +162,15 @@ add_hook('AdminAreaPage', 1, function ($vars) {
             http_response_code(403);
             exit('Staff Permission & Support PIN: Ticket reply permission denied.');
         }
+        $ticketId=(int)($_REQUEST['id'] ?? $_REQUEST['ticketid'] ?? 0);
+        if($ticketId){
+            $departmentId=Database::coreTable('tbltickets')->where('id',$ticketId)->value('deptid');
+            if($departmentId && !Access::canDepartment($departmentId)){
+                Audit::record('access.denied','ticket',$ticketId,['reason'=>'department.reply']);
+                http_response_code(403);
+                exit('Staff Permission & Support PIN: Department reply access denied.');
+            }
+        }
         if (!SupportPin::verified()) {
             http_response_code(403);
             exit('Staff Permission & Support PIN: Verify your Support PIN before replying.');
