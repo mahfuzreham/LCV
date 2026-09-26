@@ -9,11 +9,9 @@ require_once __DIR__ . '/lib/Role.php';
 require_once __DIR__ . '/lib/Audit.php';
 require_once __DIR__ . '/lib/Database.php';
 require_once __DIR__ . '/lib/Access.php';
-require_once __DIR__ . '/lib/Audit.php';
 require_once __DIR__ . '/lib/SupportPin.php';
 
 use LCV\Access;
-use LCV\Audit;
 use LCV\Audit;
 use LCV\Database;
 use LCV\SupportPin;
@@ -33,7 +31,7 @@ add_hook('AdminAreaPage', 1, function ($vars) {
     ];
 
 
-    if ($filename === 'supportticket.php' && $_SERVER['REQUEST_METHOD'] === 'POST' && !Access::isSuperAdmin()) {
+    if ($filename === 'supportticket.php' && $_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['message']) || isset($_POST['reply']) || isset($_POST['replymessage'])) && !Access::isSuperAdmin()) {
         if (!Access::can('tickets.reply')) {
             http_response_code(403);
             exit('Staff Permission & Support PIN: Ticket reply permission denied.');
