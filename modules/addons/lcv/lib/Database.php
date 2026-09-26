@@ -108,6 +108,18 @@ class Database
             });
         }
 
+        if (!$schema->hasTable('mod_lcv_license')) {
+            $schema->create('mod_lcv_license', function ($table) {
+                $table->unsignedInteger('id')->primary();
+                $table->string('license_key', 255)->nullable();
+                $table->text('local_key')->nullable();
+                $table->string('status', 40)->nullable();
+                $table->dateTime('last_checked_at')->nullable();
+                $table->dateTime('created_at')->nullable();
+                $table->dateTime('updated_at')->nullable();
+            });
+        }
+
         self::seed();
     }
 
