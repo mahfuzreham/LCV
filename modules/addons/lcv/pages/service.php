@@ -17,7 +17,7 @@ $fields=[
 'registration_date'=>['Registration date',$service->regdate],'next_due_date'=>['Next due date',$service->nextduedate],'billing_cycle'=>['Billing cycle',$service->billingcycle],
 'first_payment_amount'=>['First payment amount',$service->firstpaymentamount],'recurring_amount'=>['Recurring amount',$service->amount],'payment_method'=>['Payment method',$service->paymentmethod],
 'status'=>['Status',$service->domainstatus],'assigned_product'=>['Product ID',$service->packageid],
-'custom_fields'=>['Custom fields',$custom?'Available':'None'],
+'custom_fields'=>['Custom fields','Available when permitted'],
 ];
 if(Access::field('services','password','view')){if(SupportPin::verified()){$fields['password']=['Password','[Protected WHMCS credential — access verified]'];Audit::record('sensitive.view','service',$serviceId,['field'=>'password']);}else{$fields['password']=['Password','Support PIN verification required'];}}else{$fields['password']=['Password','Restricted'];}
 $custom=[];
