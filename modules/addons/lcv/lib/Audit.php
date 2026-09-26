@@ -17,7 +17,7 @@ final class Audit
                 'ip_address' => isset($_SERVER['REMOTE_ADDR']) ? substr($_SERVER['REMOTE_ADDR'], 0, 45) : null,
                 'created_at' => date('Y-m-d H:i:s'),
             ]);
-        } catch (\\Throwable $e) {
+        } catch (\Throwable $e) {
             // Audit failures must never break WHMCS administration.
         }
     }
