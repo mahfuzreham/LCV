@@ -10,16 +10,30 @@ require_once __DIR__ . '/lib/Audit.php';
 require_once __DIR__ . '/lib/Database.php';
 require_once __DIR__ . '/lib/Access.php';
 require_once __DIR__ . '/lib/SupportPin.php';
+require_once __DIR__ . '/lib/License.php';
 
 use LCV\Access;
 use LCV\Audit;
 use LCV\Database;
 use LCV\SupportPin;
+use LCV\License;
 
 
+function lcv_license_active()
+{
+    static $active = null;
+    if ($active === null) {
+        $active = License::valid();
+    }
+    return $active;
+}
 
 function lcv_guard_service_edit($vars)
 {
+    if (!lcv_license_active()) {
+        return;
+    }
+
     if (!Access::adminId() || Access::isSuperAdmin()) {
         return;
     }
@@ -83,6 +97,10 @@ add_hook('PreServiceEdit', 1, 'lcv_guard_service_edit');
 
 function lcv_guard_module_action($permission)
 {
+    if (!lcv_license_active()) {
+        return [];
+    }
+
     if (!Access::adminId() || Access::isSuperAdmin()) {
         return [];
     }
@@ -121,6 +139,10 @@ add_hook('PreModuleCustom', 1, function () {
 });
 
 add_hook('AdminAreaPage', 1, function ($vars) {
+    if (!lcv_license_active()) {
+        return [];
+    }
+
     $filename = isset($vars['filename']) ? strtolower((string)$vars['filename']) : '';
 
     $rules = [
@@ -156,6 +178,10 @@ add_hook('AdminAreaPage', 1, function ($vars) {
 });
 
 add_hook('AdminAreaHeaderOutput', 1, function () {
+    if (!lcv_license_active()) {
+        return '';
+    }
+
     if (Access::isSuperAdmin()) {
         return '';
     }
@@ -178,6 +204,10 @@ add_hook('AdminAreaHeaderOutput', 1, function () {
 });
 
 add_hook('AdminAreaFooterOutput', 1, function () {
+    if (!lcv_license_active()) {
+        return '';
+    }
+
     $css = '';
     $path = __DIR__ . '/assets/css/lcv.css';
     if (is_readable($path)) {
@@ -190,6 +220,10 @@ add_hook('AdminAreaFooterOutput', 1, function () {
 
 
 add_hook('AdminAreaViewTicketPage', 1, function ($vars) {
+    if (!lcv_license_active()) {
+        return '';
+    }
+
     if (Access::isSuperAdmin()) {
         return '';
     }
@@ -211,6 +245,10 @@ add_hook('AdminAreaViewTicketPage', 1, function ($vars) {
 });
 
 add_hook('TicketAdminReply', 10, function ($vars) {
+    if (!lcv_license_active()) {
+        return;
+    }
+
     if (!empty($vars['adminid']) && !Access::isSuperAdmin((int)$vars['adminid'])) {
         Audit::record('ticket.admin_reply', 'ticket', $vars['ticketid'] ?? null, [
             'department' => $vars['deptname'] ?? null,
