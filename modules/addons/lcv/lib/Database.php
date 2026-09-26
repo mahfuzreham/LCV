@@ -133,6 +133,7 @@ class Database
             ['clients.profile.view','View client profile','Clients'],
             ['clients.contacts.view','View client contacts','Clients'],
             ['services.view','View services','Products & Services'],
+            ['services.native.view','Open native WHMCS service page','Products & Services'],
             ['services.create','Create services','Products & Services'],
             ['services.modify','Modify services','Products & Services'],
             ['services.suspend','Suspend services','Products & Services'],
