@@ -195,6 +195,42 @@ class Database
             }
         }
 
+        $serviceFields = [
+            'service_id','client_name','product','domain','username','server','ip',
+            'dedicated_ip','registration_date','next_due_date','billing_cycle',
+            'first_payment_amount','recurring_amount','payment_method','status',
+            'assigned_product','custom_fields','service_notes'
+        ];
+
+        foreach (array_keys($roleDefaults) as $roleKey) {
+            $roleRow = self::table('roles')->where('role_key', $roleKey)->first();
+            if (!$roleRow || self::table('field_permissions')->where('role_id', $roleRow->id)->exists()) {
+                continue;
+            }
+
+            foreach ($serviceFields as $fieldKey) {
+                self::table('field_permissions')->insert([
+                    'role_id' => $roleRow->id,
+                    'resource' => 'services',
+                    'field_key' => $fieldKey,
+                    'can_view' => 1,
+                    'can_edit' => in_array($roleKey, ['admin_manager','technical_staff'], true) && !in_array($fieldKey, ['service_id','client_name'], true) ? 1 : 0,
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s'),
+                ]);
+            }
+
+            self::table('field_permissions')->insert([
+                'role_id' => $roleRow->id,
+                'resource' => 'services',
+                'field_key' => 'password',
+                'can_view' => 0,
+                'can_edit' => 0,
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s'),
+            ]);
+        }
+
         $role = self::table('roles')->where('role_key', Role::SUPER_ADMIN)->first();
         if ($role) {
             foreach (self::table('permissions')->pluck('id') as $permissionId) {
