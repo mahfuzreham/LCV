@@ -19,7 +19,7 @@ function lcv_config()
     return [
         'name' => 'Staff Permission & Support PIN',
         'description' => 'Granular WHMCS staff roles, page, action, field permissions and Support PIN verification.',
-        'version' => '0.5.5',
+        'version' => '0.5.6',
         'author' => 'Resellnom',
         'authorlink' => 'https://resellnom.com',
         'language' => 'english',
@@ -72,17 +72,27 @@ function lcv_output($vars)
 
     if (!empty($license['installation_mismatch'])) {
         echo '<div class="alert alert-danger">';
-        echo '<strong>Are You Cracking Our Software?</strong><br>';
-        echo 'Unauthorized installation detected. The licensed domain, IP address, or installation directory does not match this license.';
-        echo '<br><br>Please install this software only on the domain assigned to your license or request a license reissue.';
+        echo '<strong>Staff Permission & Support PIN License is locked.</strong><br>';
+        echo 'This license is not valid for the current installation.';
+        echo '<br><br>';
+        echo '<strong>Valid License Key:</strong> ';
+        echo '<a href="https://resellnom.com" target="_blank" rel="noopener noreferrer">Buy Here &gt;&gt; Resellnom.com</a>';
+        echo '<br><br>';
+        echo '<strong>Instruction:</strong> Reissue the License Key under the Service page, or create a Support Ticket for assistance.';
         echo '</div>';
         return;
     }
 
     if (($license['status'] ?? '') !== \LCV\License::STATUS_ACTIVE) {
-        echo '<div class="alert alert-danger"><strong>Staff Permission & Support PIN is locked.</strong><br>';
-        echo htmlspecialchars($license['description'] ?? 'A valid WHMCS Software Licensing license is required.', ENT_QUOTES, 'UTF-8');
-        echo '<br><br>Configure a valid WHMCS License Key under Addon Modules &gt; Configure.</div>';
+        echo '<div class="alert alert-danger">';
+        echo '<strong>Staff Permission & Support PIN License is locked.</strong><br>';
+        echo 'A valid license is required to use this addon.';
+        echo '<br><br>';
+        echo '<strong>Valid License Key:</strong> ';
+        echo '<a href="https://resellnom.com" target="_blank" rel="noopener noreferrer">Buy Here &gt;&gt; Resellnom.com</a>';
+        echo '<br><br>';
+        echo '<strong>Instruction:</strong> Reissue the License Key under the Service page, or create a Support Ticket for assistance.';
+        echo '</div>';
         return;
     }
 
