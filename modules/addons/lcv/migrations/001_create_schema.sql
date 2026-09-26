@@ -77,3 +77,14 @@ CREATE TABLE mod_lcv_audit_logs (
     created_at DATETIME NOT NULL,
     KEY admin_created (admin_id, created_at)
 );
+
+
+CREATE TABLE mod_lcv_license (
+    id INT UNSIGNED PRIMARY KEY,
+    license_key VARCHAR(255) NULL,
+    local_key TEXT NULL,
+    status VARCHAR(40) NULL,
+    last_checked_at DATETIME NULL,
+    created_at DATETIME NULL,
+    updated_at DATETIME NULL
+);
