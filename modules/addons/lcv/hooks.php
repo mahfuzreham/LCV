@@ -84,6 +84,28 @@ add_hook('AdminAreaFooterOutput', 1, function () {
     return $css . $js;
 });
 
+
+add_hook('AdminAreaViewTicketPage', 1, function ($vars) {
+    if (Access::isSuperAdmin()) {
+        return '';
+    }
+
+    $ticketId = (int)($vars['ticketid'] ?? 0);
+    if (!$ticketId || !Access::can('tickets.view')) {
+        http_response_code(403);
+        exit('Staff Permission & Support PIN: Ticket access denied.');
+    }
+
+    $departmentId = Database::coreTable('tbltickets')->where('id', $ticketId)->value('deptid');
+    if ($departmentId && !Access::canDepartment($departmentId)) {
+        Audit::record('access.denied', 'ticket', $ticketId, ['reason' => 'department']);
+        http_response_code(403);
+        exit('Staff Permission & Support PIN: Department access denied.');
+    }
+
+    return '';
+});
+
 add_hook('TicketAdminReply', 10, function ($vars) {
     if (!empty($vars['adminid']) && !Access::isSuperAdmin((int)$vars['adminid'])) {
         Audit::record('ticket.admin_reply', 'ticket', $vars['ticketid'] ?? null, [
