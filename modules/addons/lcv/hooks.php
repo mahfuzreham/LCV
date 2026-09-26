@@ -62,7 +62,7 @@ add_hook('AdminAreaPage', 1, function ($vars) {
     $rules = [
         'clientssummary.php' => 'clients.summary.view',
         'clients.php' => 'clients.view',
-        'clientsservices.php' => 'services.view',
+        'clientsservices.php' => 'services.native.view',
         'supporttickets.php' => 'tickets.view',
         'supportticket.php' => 'tickets.view',
         'invoices.php' => 'billing.invoices.view',
@@ -85,7 +85,7 @@ add_hook('AdminAreaPage', 1, function ($vars) {
     if (isset($rules[$filename]) && !Access::can($rules[$filename])) {
         Audit::record('access.denied', $filename, null, ['permission' => $rules[$filename]]);
         http_response_code(403);
-        exit('Staff Permission & Support PIN: Access denied.');
+        exit('Staff Permission & Support PIN: Access denied. Use the Staff Access filtered service viewer when native service access is not permitted.');
     }
 
     return [];
