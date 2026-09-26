@@ -19,7 +19,7 @@ function lcv_config()
     return [
         'name' => 'Staff Permission & Support PIN',
         'description' => 'Granular WHMCS staff roles, page, action, field permissions and Support PIN verification.',
-        'version' => '0.5.1',
+        'version' => '0.5.2',
         'author' => 'MD Mahfuz Reham',
         'language' => 'english',
         'fields' => [
@@ -46,8 +46,8 @@ function lcv_config()
                 'FriendlyName' => 'Local Key Days',
                 'Type' => 'text',
                 'Size' => '5',
-                'Default' => '15',
-                'Description' => 'Number of days between remote license checks.',
+                'Default' => '30',
+                'Description' => 'Number of days between remote license checks. Default: 30 days.',
             ],
             'allow_check_fail_days' => [
                 'FriendlyName' => 'Remote Check Grace Days',
@@ -92,10 +92,19 @@ function lcv_deactivate()
 function lcv_output($vars)
 {
     $base = __DIR__;
-
     $view = isset($_GET['view']) ? (string)$_GET['view'] : 'dashboard';
 
     $license = \LCV\License::status();
+
+    if (!empty($license['installation_mismatch'])) {
+        echo '<div class="alert alert-danger">';
+        echo '<strong>Are You Cracking Our Software?</strong><br>';
+        echo 'Unauthorized installation detected. The licensed domain, IP address, or installation directory does not match this license.';
+        echo '<br><br>Please install this software only on the domain assigned to your license or request a license reissue.';
+        echo '</div>';
+        return;
+    }
+
     if (($license['status'] ?? '') !== \LCV\License::STATUS_ACTIVE) {
         echo '<div class="alert alert-danger"><strong>Staff Permission & Support PIN is locked.</strong><br>';
         echo htmlspecialchars($license['description'] ?? 'A valid WHMCS Software Licensing license is required.', ENT_QUOTES, 'UTF-8');
