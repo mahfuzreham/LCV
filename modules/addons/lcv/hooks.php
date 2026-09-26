@@ -16,6 +16,46 @@ use LCV\Audit;
 use LCV\Database;
 use LCV\SupportPin;
 
+
+function lcv_guard_module_action($permission)
+{
+    if (!Access::adminId() || Access::isSuperAdmin()) {
+        return [];
+    }
+
+    if (!Access::can($permission)) {
+        Audit::record('access.denied', 'module_action', null, ['permission' => $permission]);
+        return ['abortcmd' => true];
+    }
+
+    if (!SupportPin::verified()) {
+        Audit::record('support_pin.required', 'module_action', null, ['permission' => $permission]);
+        return ['abortcmd' => true];
+    }
+
+    return [];
+}
+
+add_hook('PreModuleCreate', 1, function () {
+    return lcv_guard_module_action('services.create');
+});
+
+add_hook('PreModuleSuspend', 1, function () {
+    return lcv_guard_module_action('services.suspend');
+});
+
+add_hook('PreModuleUnsuspend', 1, function () {
+    return lcv_guard_module_action('services.unsuspend');
+});
+
+add_hook('PreModuleTerminate', 1, function () {
+    return lcv_guard_module_action('services.terminate');
+});
+
+add_hook('PreModuleCustom', 1, function () {
+    return lcv_guard_module_action('services.execute');
+});
+
 add_hook('AdminAreaPage', 1, function ($vars) {
     $filename = isset($vars['filename']) ? strtolower((string)$vars['filename']) : '';
 
