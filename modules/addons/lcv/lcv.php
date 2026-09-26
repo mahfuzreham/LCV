@@ -75,6 +75,11 @@ function lcv_output($vars)
         return;
     }
 
+    if ($view === 'departments') {
+        require $base . '/pages/departments.php';
+        return;
+    }
+
     if ($view === 'verify') {
         require $base . '/pages/verify.php';
         return;
