@@ -10,6 +10,7 @@ require_once __DIR__ . '/lib/Audit.php';
 require_once __DIR__ . '/lib/Database.php';
 require_once __DIR__ . '/lib/Access.php';
 require_once __DIR__ . '/lib/SupportPin.php';
+require_once __DIR__ . '/lib/License.php';
 
 use LCV\Database;
 
@@ -21,7 +22,41 @@ function lcv_config()
         'version' => '0.4.0',
         'author' => 'MD Mahfuz Reham',
         'language' => 'english',
-        'fields' => [],
+        'fields' => [
+            'license_key' => [
+                'FriendlyName' => 'WHMCS License Key',
+                'Type' => 'text',
+                'Size' => '40',
+                'Description' => 'Enter the license key issued by your WHMCS Software Licensing product.',
+            ],
+            'licensing_url' => [
+                'FriendlyName' => 'WHMCS Licensing URL',
+                'Type' => 'text',
+                'Size' => '50',
+                'Default' => 'https://your-whmcs.example.com/',
+                'Description' => 'Base URL of the WHMCS installation that runs the Software Licensing addon.',
+            ],
+            'licensing_secret_key' => [
+                'FriendlyName' => 'MD5 Hash Verification Secret',
+                'Type' => 'password',
+                'Size' => '40',
+                'Description' => 'Must exactly match the MD5 Hash Verification value configured on the WHMCS licensing product.',
+            ],
+            'local_key_days' => [
+                'FriendlyName' => 'Local Key Days',
+                'Type' => 'text',
+                'Size' => '5',
+                'Default' => '15',
+                'Description' => 'Number of days between remote license checks.',
+            ],
+            'allow_check_fail_days' => [
+                'FriendlyName' => 'Remote Check Grace Days',
+                'Type' => 'text',
+                'Size' => '5',
+                'Default' => '5',
+                'Description' => 'Grace period when the licensing server cannot be reached.',
+            ],
+        ],
     ];
 }
 
@@ -59,6 +94,14 @@ function lcv_output($vars)
     $base = __DIR__;
 
     $view = isset($_GET['view']) ? (string)$_GET['view'] : 'dashboard';
+
+    $license = \LCV\License::status();
+    if (($license['status'] ?? '') !== \LCV\License::STATUS_ACTIVE) {
+        echo '<div class="alert alert-danger"><strong>Staff Permission & Support PIN is locked.</strong><br>';
+        echo htmlspecialchars($license['description'] ?? 'A valid WHMCS Software Licensing license is required.', ENT_QUOTES, 'UTF-8');
+        echo '<br><br>Configure the WHMCS License Key, Licensing URL and MD5 Hash Verification Secret under Addon Modules &gt; Configure.</div>';
+        return;
+    }
 
     if ($view === 'permissions') {
         require $base . '/pages/permissions.php';
