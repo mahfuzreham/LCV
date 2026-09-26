@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_staff'])) {
     }
 }
 
-$admins = Database::table('admins')
+$admins = Database::coreTable('tbladmins')
     ->leftJoin('mod_lcv_admin_roles','tbladmins.id','=','mod_lcv_admin_roles.admin_id')
     ->leftJoin('mod_lcv_roles','mod_lcv_admin_roles.role_id','=','mod_lcv_roles.id')
     ->select('tbladmins.id','tbladmins.username','tbladmins.firstname','tbladmins.lastname','tbladmins.disabled','mod_lcv_roles.role_key','mod_lcv_roles.name as role_name')
