@@ -164,11 +164,11 @@ class Database
         }
 
         $roleDefaults = [
-            'admin_manager' => ['clients.view','clients.summary.view','clients.profile.view','clients.contacts.view','services.view','services.create','services.modify','services.suspend','services.unsuspend','services.terminate','services.execute','tickets.view','tickets.reply','tickets.manage','billing.invoices.view','billing.transactions.view','billing.refund','servers.view','servers.manage','servers.execute'],
+            'admin_manager' => ['clients.view','clients.summary.view','clients.profile.view','clients.contacts.view','services.view','services.native.view','services.create','services.modify','services.suspend','services.unsuspend','services.terminate','services.execute','tickets.view','tickets.reply','tickets.manage','billing.invoices.view','billing.transactions.view','billing.refund','servers.view','servers.manage','servers.execute'],
             'support_manager' => ['clients.view','clients.summary.view','tickets.view','tickets.reply','tickets.manage'],
             'support_staff' => ['clients.view','clients.summary.view','tickets.view','tickets.reply'],
             'billing_staff' => ['clients.view','clients.summary.view','billing.invoices.view','billing.transactions.view'],
-            'technical_staff' => ['clients.view','clients.summary.view','services.view','services.modify','services.suspend','services.unsuspend','services.execute','servers.view','servers.execute'],
+            'technical_staff' => ['clients.view','clients.summary.view','services.view','services.native.view','services.modify','services.suspend','services.unsuspend','services.execute','servers.view','servers.execute'],
             'sales_staff' => ['clients.view','clients.profile.view','clients.contacts.view','services.view'],
             'read_only' => ['clients.view','services.view','tickets.view','billing.invoices.view','billing.transactions.view','servers.view'],
         ];
