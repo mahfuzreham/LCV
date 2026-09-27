@@ -2,11 +2,7 @@
 
 defined('WHMCS') or die('This file cannot be accessed directly');
 
-use LCVAccess;
-use LCVAudit;
-use LCVLicense;
-
-if (!Access::isSuperAdmin()) {
+if (!\LCV\Access::isSuperAdmin()) {
     http_response_code(403);
     exit('Access denied.');
 }
@@ -22,17 +18,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['check_license'])) {
     if (!hash_equals($csrf, (string)($_POST['csrf'] ?? ''))) {
         $result = ['status' => 'Invalid', 'description' => 'Invalid security token.'];
     } else {
-        $result = License::status();
-        Audit::record('license.check', 'license', null, [
+        $result = \LCV\License::status();
+        \LCV\Audit::record('license.check', 'license', null, [
             'status' => $result['status'] ?? 'Unknown',
             'installation_mismatch' => !empty($result['installation_mismatch']),
         ]);
     }
 }
 
-$current = $result ?: License::status();
+$current = $result ?: \LCV\License::status();
 $status = (string)($current['status'] ?? 'Unknown');
-$active = $status === License::STATUS_ACTIVE;
+$active = $status === \LCV\License::STATUS_ACTIVE;
 ?>
 <div class="lcv-wrap">
     <div class="lcv-page-head">
