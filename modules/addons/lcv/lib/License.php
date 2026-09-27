@@ -15,12 +15,10 @@ class License
             if (defined('LCV_LICENSE_SERVER_URL') && LCV_LICENSE_SERVER_URL !== '') {
                 return rtrim((string)LCV_LICENSE_SERVER_URL, '/') . '/';
             }
-
             $env = getenv('LCV_LICENSE_SERVER_URL');
             if ($env !== false && trim($env) !== '') {
                 return rtrim(trim($env), '/') . '/';
             }
-
             return self::DEFAULT_LICENSE_SERVER;
         }
 
@@ -28,7 +26,6 @@ class License
             if (defined('LCV_LICENSE_SECRET') && LCV_LICENSE_SECRET !== '') {
                 return trim((string)LCV_LICENSE_SECRET);
             }
-
             $env = getenv('LCV_LICENSE_SECRET');
             if ($env !== false && trim($env) !== '') {
                 return trim($env);
@@ -39,7 +36,6 @@ class License
             if (defined('LCV_LOCAL_KEY_DAYS') && LCV_LOCAL_KEY_DAYS !== '') {
                 return (string)LCV_LOCAL_KEY_DAYS;
             }
-
             $env = getenv('LCV_LOCAL_KEY_DAYS');
             if ($env !== false && trim($env) !== '') {
                 return trim($env);
@@ -50,7 +46,6 @@ class License
             if (defined('LCV_LICENSE_GRACE_DAYS') && LCV_LICENSE_GRACE_DAYS !== '') {
                 return (string)LCV_LICENSE_GRACE_DAYS;
             }
-
             $env = getenv('LCV_LICENSE_GRACE_DAYS');
             if ($env !== false && trim($env) !== '') {
                 return trim($env);
@@ -96,7 +91,6 @@ class License
         $licenseKey = self::licenseKey();
         $whmcsUrl = rtrim(self::config('licensing_url', self::DEFAULT_LICENSE_SERVER), '/') . '/';
         $secret = self::config('licensing_secret_key');
-
         $localKeyDays = max(1, (int)self::config('local_key_days', 30));
         $allowCheckFailDays = max(0, (int)self::config('allow_check_fail_days', 5));
 
@@ -115,18 +109,16 @@ class License
             self::saveLocalKey($result['localkey']);
         }
 
-        if (isset($result['status'])) {
-            Database::table('license')->updateOrInsert(
-                ['id' => 1],
-                [
-                    'license_key' => $licenseKey,
-                    'status' => (string)$result['status'],
-                    'last_checked_at' => date('Y-m-d H:i:s'),
-                    'updated_at' => date('Y-m-d H:i:s'),
-                    'created_at' => date('Y-m-d H:i:s'),
-                ]
-            );
-        }
+        Database::table('license')->updateOrInsert(
+            ['id' => 1],
+            [
+                'license_key' => $licenseKey,
+                'status' => (string)($result['status'] ?? 'Invalid'),
+                'last_checked_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s'),
+                'created_at' => date('Y-m-d H:i:s'),
+            ]
+        );
 
         return $result;
     }
@@ -195,7 +187,7 @@ class License
                                     $installationMismatch = true;
                                 }
 
-                                $validdirs = isset($results['validdirectory']) ? array_filter(array_map('trim', explode(',', $results['validdirectory'])) : [];
+                                $validdirs = isset($results['validdirectory']) ? array_filter(array_map('trim', explode(',', $results['validdirectory']))) : [];
                                 if ($validdirs && !in_array($dirpath, $validdirs, true)) {
                                     $installationMismatch = true;
                                 }
@@ -243,7 +235,7 @@ class License
             if (!$data) {
                 $localexpiry = date('Ymd', mktime(0, 0, 0, date('m'), date('d') - ($localkeydays + $allowCheckFailDays), date('Y')));
 
-                if (!empty($localkey) && isset($originalcheckdate) && $originalcheckdate > $localexpiry && !empty($localkeyresults) && !$installationMismatch) {
+                if (!empty($localKey) && isset($originalcheckdate) && $originalcheckdate > $localexpiry && !empty($localkeyresults) && !$installationMismatch) {
                     $results = $localkeyresults;
                     $results['remotecheck'] = false;
                 } else {
