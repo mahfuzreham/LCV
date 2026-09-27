@@ -1,6 +1,6 @@
 # Staff Permission & Support PIN
 
-**Developer:** MD Mahfuz Reham
+**Developer:** Resellnom
 
 A professional WHMCS administrator addon for granular staff access control, client/service permissions, field-level visibility, support department restrictions, and Support PIN verification.
 
@@ -48,13 +48,48 @@ Target: WHMCS 8.x/9.x. Exact compatibility will be verified against the deployed
 
 ## Licensing
 
-The addon uses the WHMCS Software Licensing verification endpoint configured in the addon settings. The license key and MD5 verification secret are stored in WHMCS addon configuration and are not included in this repository.
+The addon uses the WHMCS Software Licensing verification endpoint at `https://my.resellnom.com/modules/servers/licensing/verify.php`.
+
+The client-facing addon configuration intentionally exposes **only the WHMCS License Key**. The licensing URL, MD5 verification secret, local-key interval, and grace period are not shown in the addon Configure screen.
+
+### Private Licensing Configuration
+
+For new installations, private licensing values should be supplied server-side through WHMCS `configuration.php` or environment variables. Do not commit the secret to GitHub.
+
+Example in WHMCS `configuration.php`:
+
+~~~php
+define('LCV_LICENSE_SERVER_URL', 'https://my.resellnom.com/');
+define('LCV_LICENSE_SECRET', 'YOUR_PRIVATE_MD5_VERIFICATION_SECRET');
+define('LCV_LOCAL_KEY_DAYS', '30');
+define('LCV_LICENSE_GRACE_DAYS', '5');
+~~~
+
+The actual secret must be replaced with the private MD5 verification secret configured on the WHMCS Software Licensing server.
+
+Supported environment variables are:
+
+- `LCV_LICENSE_SERVER_URL`
+- `LCV_LICENSE_SECRET`
+- `LCV_LOCAL_KEY_DAYS`
+- `LCV_LICENSE_GRACE_DAYS`
+
+Existing installations that already have the private licensing values stored in the addon database remain backward compatible.
 
 - Local key validation avoids a remote request on every admin page load.
 - Default remote re-check interval: 30 days.
 - Domain, IP and installation-directory bindings are validated when the license is checked.
 - Unauthorized installation or inactive license status locks the addon UI and protected hooks.
 - Use the WHMCS License Manager to suspend, reissue or terminate a license when required.
+
+## Client Setup
+
+1. Install and activate the addon.
+2. Open **Addon Modules → Configure**.
+3. Enter the **WHMCS License Key**.
+4. Save.
+5. The addon validates the license against the licensing server.
+6. When the license is Active and the domain/IP/directory bindings match, the addon unlocks automatically.
 
 ## Status
 
