@@ -11,8 +11,6 @@ class License
 
     public static function config($key, $default = '')
     {
-        // Client-facing configuration is intentionally limited to the license key.
-        // Private licensing settings may be supplied server-side via constants/env.
         if ($key === 'licensing_url') {
             if (defined('LCV_LICENSE_SERVER_URL') && LCV_LICENSE_SERVER_URL !== '') {
                 return rtrim((string)LCV_LICENSE_SERVER_URL, '/') . '/';
@@ -59,8 +57,6 @@ class License
             }
         }
 
-        // Backward compatibility for installations that already have these
-        // private values stored in tbladdonmodules.
         $value = Capsule::table('tbladdonmodules')
             ->where('module', 'lcv')
             ->where('setting', $key)
@@ -184,10 +180,7 @@ class License
                         $originalcheckdate = $localkeyresults['checkdate'];
 
                         if (hash_equals($md5hash, md5($originalcheckdate . $secret))) {
-                            $localexpiry = date(
-                                'Ymd',
-                                mktime(0, 0, 0, date('m'), date('d') - $localkeydays, date('Y'))
-                            );
+                            $localexpiry = date('Ymd', mktime(0, 0, 0, date('m'), date('d') - $localkeydays, date('Y')));
 
                             if ($originalcheckdate > $localexpiry) {
                                 $results = $localkeyresults;
@@ -202,7 +195,7 @@ class License
                                     $installationMismatch = true;
                                 }
 
-                                $validdirs = isset($results['validdirectory']) ? array_filter(array_map('trim', explode(',', $results['validdirectory']))) : [];
+                                $validdirs = isset($results['validdirectory']) ? array_filter(array_map('trim', explode(',', $results['validdirectory'])) : [];
                                 if ($validdirs && !in_array($dirpath, $validdirs, true)) {
                                     $installationMismatch = true;
                                 }
@@ -248,12 +241,9 @@ class License
             curl_close($ch);
 
             if (!$data) {
-                $localexpiry = date(
-                    'Ymd',
-                    mktime(0, 0, 0, date('m'), date('d') - ($localkeydays + $allowCheckFailDays), date('Y'))
-                );
+                $localexpiry = date('Ymd', mktime(0, 0, 0, date('m'), date('d') - ($localkeydays + $allowCheckFailDays), date('Y')));
 
-                if (!empty($localKey) && isset($originalcheckdate) && $originalcheckdate > $localexpiry && !empty($localkeyresults) && !$installationMismatch) {
+                if (!empty($localkey) && isset($originalcheckdate) && $originalcheckdate > $localexpiry && !empty($localkeyresults) && !$installationMismatch) {
                     $results = $localkeyresults;
                     $results['remotecheck'] = false;
                 } else {
