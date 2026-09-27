@@ -7,9 +7,60 @@ use WHMCS\Database\Capsule;
 class License
 {
     const STATUS_ACTIVE = 'Active';
+    const DEFAULT_LICENSE_SERVER = 'https://my.resellnom.com/';
 
     public static function config($key, $default = '')
     {
+        // Client-facing configuration is intentionally limited to the license key.
+        // Private licensing settings may be supplied server-side via constants/env.
+        if ($key === 'licensing_url') {
+            if (defined('LCV_LICENSE_SERVER_URL') && LCV_LICENSE_SERVER_URL !== '') {
+                return rtrim((string)LCV_LICENSE_SERVER_URL, '/') . '/';
+            }
+
+            $env = getenv('LCV_LICENSE_SERVER_URL');
+            if ($env !== false && trim($env) !== '') {
+                return rtrim(trim($env), '/') . '/';
+            }
+
+            return self::DEFAULT_LICENSE_SERVER;
+        }
+
+        if ($key === 'licensing_secret_key') {
+            if (defined('LCV_LICENSE_SECRET') && LCV_LICENSE_SECRET !== '') {
+                return trim((string)LCV_LICENSE_SECRET);
+            }
+
+            $env = getenv('LCV_LICENSE_SECRET');
+            if ($env !== false && trim($env) !== '') {
+                return trim($env);
+            }
+        }
+
+        if ($key === 'local_key_days') {
+            if (defined('LCV_LOCAL_KEY_DAYS') && LCV_LOCAL_KEY_DAYS !== '') {
+                return (string)LCV_LOCAL_KEY_DAYS;
+            }
+
+            $env = getenv('LCV_LOCAL_KEY_DAYS');
+            if ($env !== false && trim($env) !== '') {
+                return trim($env);
+            }
+        }
+
+        if ($key === 'allow_check_fail_days') {
+            if (defined('LCV_LICENSE_GRACE_DAYS') && LCV_LICENSE_GRACE_DAYS !== '') {
+                return (string)LCV_LICENSE_GRACE_DAYS;
+            }
+
+            $env = getenv('LCV_LICENSE_GRACE_DAYS');
+            if ($env !== false && trim($env) !== '') {
+                return trim($env);
+            }
+        }
+
+        // Backward compatibility for installations that already have these
+        // private values stored in tbladdonmodules.
         $value = Capsule::table('tbladdonmodules')
             ->where('module', 'lcv')
             ->where('setting', $key)
@@ -47,10 +98,9 @@ class License
     public static function check($force = false)
     {
         $licenseKey = self::licenseKey();
-        $whmcsUrl = rtrim(self::config('licensing_url'), '/') . '/';
+        $whmcsUrl = rtrim(self::config('licensing_url', self::DEFAULT_LICENSE_SERVER), '/') . '/';
         $secret = self::config('licensing_secret_key');
 
-        // Default remote re-check: every 30 days.
         $localKeyDays = max(1, (int)self::config('local_key_days', 30));
         $allowCheckFailDays = max(0, (int)self::config('allow_check_fail_days', 5));
 
@@ -141,7 +191,6 @@ class License
 
                             if ($originalcheckdate > $localexpiry) {
                                 $results = $localkeyresults;
-                                $installationMismatch = false;
 
                                 $validdomains = isset($results['validdomain']) ? array_filter(array_map('trim', explode(',', strtolower($results['validdomain'])))) : [];
                                 if ($validdomains && !in_array($domain, $validdomains, true)) {
@@ -204,7 +253,7 @@ class License
                     mktime(0, 0, 0, date('m'), date('d') - ($localkeydays + $allowCheckFailDays), date('Y'))
                 );
 
-                if (!empty($localkey) && isset($originalcheckdate) && $originalcheckdate > $localexpiry && !empty($localkeyresults) && !$installationMismatch) {
+                if (!empty($localKey) && isset($originalcheckdate) && $originalcheckdate > $localexpiry && !empty($localkeyresults) && !$installationMismatch) {
                     $results = $localkeyresults;
                     $results['remotecheck'] = false;
                 } else {
