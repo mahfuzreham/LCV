@@ -10,7 +10,6 @@ require_once __DIR__ . '/lib/Audit.php';
 require_once __DIR__ . '/lib/Database.php';
 require_once __DIR__ . '/lib/Access.php';
 require_once __DIR__ . '/lib/SupportPin.php';
-require_once __DIR__ . '/lib/License.php';
 
 use LCV\Database;
 
@@ -24,12 +23,6 @@ function lcv_config()
         'authorlink' => 'https://resellnom.com',
         'language' => 'english',
         'fields' => [
-            'license_key' => [
-                'FriendlyName' => 'WHMCS License Key',
-                'Type' => 'text',
-                'Size' => '40',
-                'Description' => 'Enter the license key issued for this installation.',
-            ],
         ],
     ];
 }
@@ -79,45 +72,7 @@ function lcv_output($vars)
 
     $license = \LCV\License::status();
 
-    if (!empty($license['installation_mismatch'])) {
-        echo '<div class="alert alert-danger">';
-        echo '<strong>Staff Permission & Support PIN License is locked.</strong><br>';
-        echo 'This license is not valid for the current installation.';
-        echo '<br><br>';
-        echo '<strong>Valid License Key:</strong> ';
-        echo '<a href="https://resellnom.com" target="_blank" rel="noopener noreferrer">Buy Here &gt;&gt; Resellnom.com</a>';
-        echo '<br><br>';
-        echo '<strong>Instruction:</strong> Reissue the License Key under the Service page, or create a Support Ticket for assistance.';
-        echo '</div>';
-        return;
-    }
-
-    if (($license['status'] ?? '') !== \LCV\License::STATUS_ACTIVE) {
-        echo '<div class="alert alert-danger">';
-        echo '<strong>Staff Permission & Support PIN License is locked.</strong><br>';
-        echo 'A valid license is required to use this addon.';
-        echo '<br><br>';
-        echo '<strong>Valid License Key:</strong> ';
-        echo '<a href="https://resellnom.com" target="_blank" rel="noopener noreferrer">Buy Here &gt;&gt; Resellnom.com</a>';
-        echo '<br><br>';
-        echo '<strong>Instruction:</strong> Reissue the License Key under the Service page, or create a Support Ticket for assistance.';
-        echo '</div>';
-        return;
-    }
-
-    if ($view === 'permissions') {
-        require $base . '/pages/permissions.php';
-        return;
-    }
-
-    if ($view === 'staff') {
-        require $base . '/pages/staff.php';
-        return;
-    }
-
-    if ($view === 'security') {
-        require $base . '/pages/security.php';
-        return;
+    if (!empty($license['instal
     }
 
     if ($view === 'departments') {
