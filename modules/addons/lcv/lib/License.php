@@ -141,6 +141,29 @@ class License
         }
     }
 
+    private static function parseResponse($data)
+    {
+        $results = [];
+
+        if (function_exists('simplexml_load_string')) {
+            $xml = @simplexml_load_string($data, 'SimpleXMLElement', LIBXML_NONET | LIBXML_NOCDATA);
+            if ($xml !== false) {
+                foreach ($xml->children() as $key => $value) {
+                    $results[$key] = html_entity_decode((string)$value, ENT_QUOTES, 'UTF-8');
+                }
+            }
+        }
+
+        if (!$results) {
+            preg_match_all('/<(?!\\/)([A-Za-z0-9_.:-]+)>([^<]*)<\\/\\1>/i', $data, $matches);
+            foreach ($matches[1] as $k => $v) {
+                $results[$v] = html_entity_decode($matches[2][$k], ENT_QUOTES, 'UTF-8');
+            }
+        }
+
+        return $results;
+    }
+
     private static function checkLicense($licensekey, $localkey, $whmcsurl, $secret, $localkeydays, $allowcheckfaildays)
     {
         $checkToken = time() . md5(mt_rand(1000000000, 9999999999) . $licensekey);
@@ -246,12 +269,7 @@ class License
                     ];
                 }
             } else {
-                preg_match_all('/<(.*?)>([^<]*)<\/\\1>/i', $data, $matches);
-                $results = [];
-
-                foreach ($matches[1] as $k => $v) {
-                    $results[$v] = html_entity_decode($matches[2][$k], ENT_QUOTES, 'UTF-8');
-                }
+                $results = self::parseResponse($data);
             }
 
             if (!is_array($results) || empty($results['status'])) {
