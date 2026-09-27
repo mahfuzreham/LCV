@@ -12,6 +12,7 @@ $nav = [
     'security' => 'Support PIN',
     'departments' => 'Departments',
     'audit' => 'Audit Log',
+    'license' => 'License',
 ];
 ?>
 <div class="lcv-wrap">
