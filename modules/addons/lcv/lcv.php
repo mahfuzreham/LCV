@@ -19,7 +19,7 @@ function lcv_config()
     return [
         'name' => 'Staff Permission & Support PIN',
         'description' => 'Granular WHMCS staff roles, page, action, field permissions and Support PIN verification.',
-        'version' => '0.5.6',
+        'version' => '0.5.7',
         'author' => 'Resellnom',
         'authorlink' => 'https://resellnom.com',
         'language' => 'english',
@@ -67,6 +67,15 @@ function lcv_output($vars)
 {
     $base = __DIR__;
     $view = isset($_GET['view']) ? (string)$_GET['view'] : 'dashboard';
+
+    if ($view === 'license') {
+        if (!\LCV\Access::isSuperAdmin()) {
+            http_response_code(403);
+            exit('Access denied.');
+        }
+        require $base . '/pages/license.php';
+        return;
+    }
 
     $license = \LCV\License::status();
 
